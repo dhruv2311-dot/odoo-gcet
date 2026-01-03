@@ -4,6 +4,7 @@ import { useState, useEffect } from 'react';
 import { useRouter } from 'next/navigation';
 import Link from 'next/link';
 import { Search, Plus, Calendar, Clock, CheckCircle, XCircle, AlertCircle } from 'lucide-react';
+import NotificationBell from '@/components/NotificationBell';
 
 interface LeaveRequest {
   id: string;
@@ -198,6 +199,9 @@ export default function LeavePage() {
             </div>
 
             <div className="flex items-center space-x-4">
+              <div className="relative">
+                <NotificationBell userId={user?.id || ''} />
+              </div>
               <div className="relative">
                 <input
                   type="text"
