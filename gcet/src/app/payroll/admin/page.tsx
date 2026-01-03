@@ -4,6 +4,7 @@ import { useState, useEffect } from 'react';
 import { useRouter } from 'next/navigation';
 import Link from 'next/link';
 import { Search, Plus, Calendar, Users, FileText, Download } from 'lucide-react';
+import { useSalaryCalculation, formatCurrency } from '@/hooks/useSalaryCalculation';
 
 interface PayrollRecord {
   id: string;
@@ -50,11 +51,22 @@ export default function AdminPayrollPage() {
     payableDays: '',
   });
 
+  // Use salary calculation hook
+  const salaryCalculation = useSalaryCalculation(formData.grossSalary, formData.totalDeductions);
+
   useEffect(() => {
     fetchUser();
     fetchPayrollRecords();
     fetchEmployees();
   }, []);
+
+  // Update net salary when calculation changes
+  useEffect(() => {
+    setFormData(prev => ({
+      ...prev,
+      netSalary: salaryCalculation.netSalary
+    }));
+  }, [salaryCalculation.netSalary]);
 
   const fetchUser = async () => {
     try {
@@ -98,13 +110,6 @@ export default function AdminPayrollPage() {
     } catch (error) {
       console.error('Failed to fetch employees:', error);
     }
-  };
-
-  const formatCurrency = (amount: string) => {
-    return new Intl.NumberFormat('en-IN', {
-      style: 'currency',
-      currency: 'INR',
-    }).format(parseFloat(amount));
   };
 
   const formatDate = (dateString: string) => {
@@ -313,15 +318,23 @@ export default function AdminPayrollPage() {
                 </div>
                 
                 <div>
-                  <label className="block text-sm font-medium text-gray-700 mb-1">Net Salary</label>
+                  <label className="block text-sm font-medium text-gray-700 mb-1">
+                    Net Salary 
+                    <span className="text-xs text-gray-500 ml-1">(Auto-calculated)</span>
+                  </label>
                   <input
                     type="number"
                     step="0.01"
                     value={formData.netSalary}
-                    onChange={(e) => setFormData(prev => ({ ...prev, netSalary: e.target.value }))}
-                    className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
+                    readOnly
+                    className="w-full px-3 py-2 border border-gray-300 rounded-lg bg-gray-50 text-gray-600 focus:outline-none focus:ring-2 focus:ring-blue-500"
                     required
                   />
+                  {formData.grossSalary && formData.totalDeductions && (
+                    <p className="text-xs text-gray-500 mt-1">
+                      {salaryCalculation.formula}
+                    </p>
+                  )}
                 </div>
                 
                 <div>
