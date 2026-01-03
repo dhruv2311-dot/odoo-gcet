@@ -78,13 +78,22 @@ export async function POST(
       type: 'leave_status',
       title: 'Leave Approved',
       message: `Your leave from ${leave.start_date} to ${leave.end_date} has been approved by ${currentUser.firstName} ${currentUser.lastName}.`,
-      link: `/leave`,
+      link: '/leave',
       payload: {
         leaveId: leave.id,
         action: 'approved',
         approver: `${currentUser.firstName} ${currentUser.lastName}`,
       },
+      created_at: new Date(),
     });
+
+    // Return notification data for toast
+    const notificationData = {
+      userId: leave.user_id,
+      title: 'Leave Approved',
+      message: `Your leave from ${leave.start_date} to ${leave.end_date} has been approved.`,
+      type: 'success'
+    };
 
     // Update attendance for leave dates
     const startDate = new Date(leave.start_date);
@@ -113,6 +122,7 @@ export async function POST(
     return NextResponse.json({
       message: 'Leave approved successfully',
       leave: updatedLeave,
+      toast: notificationData
     });
 
   } catch (error) {
