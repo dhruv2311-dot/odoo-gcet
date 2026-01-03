@@ -10,6 +10,8 @@ interface Toast {
   message: string;
   type: 'success' | 'error' | 'info' | 'warning' | 'default';
   duration?: number;
+  title?: string;
+  eventId?: string;
 }
 
 interface ToastProps {
@@ -17,7 +19,7 @@ interface ToastProps {
 }
 
 export default function Toast({ toast }: ToastProps) {
-  const { removeToast } = useToast();
+  const { removeToast, toasts } = useToast();
   const [isVisible, setIsVisible] = useState(true);
 
   useEffect(() => {
@@ -33,11 +35,14 @@ export default function Toast({ toast }: ToastProps) {
 
   return (
     <div
-      className={`fixed top-4 right-4 z-50 flex items-end space-x-4 transition-all duration-300 ease-in-out ${
+      className={`fixed bottom-4 right-4 z-50 flex items-end space-x-4 transition-all duration-300 ease-in-out pointer-events-auto ${
         isVisible ? 'opacity-100 translate-y-0' : 'opacity-0 translate-y-2 pointer-events-none'
       }`}
+      style={{
+        marginBottom: `${Math.max(0, (toasts.length - 1) * 80)}px`,
+      }}
     >
-      <div className="bg-white rounded-lg shadow-lg border border border-gray-200 p-4 min-w-[300px] max-w-md">
+      <div className="bg-white rounded-lg shadow-lg border border-gray-200 p-4 min-w-[300px] max-w-md backdrop-blur-sm">
         <div className="flex items-start">
           {/* Icon */}
           <div className="flex-shrink-0 mr-3">
@@ -50,7 +55,12 @@ export default function Toast({ toast }: ToastProps) {
 
           {/* Content */}
           <div className="flex-1">
-            <p className="text-sm font-medium text-gray-900">
+            {toast.title && (
+              <p className="text-sm font-semibold text-gray-900 mb-1">
+                {toast.title}
+              </p>
+            )}
+            <p className="text-sm text-gray-700">
               {toast.message}
             </p>
           </div>
@@ -59,7 +69,7 @@ export default function Toast({ toast }: ToastProps) {
           <button
             onClick={() => {
               setIsVisible(false);
-              removeToast(toast.id);
+              setTimeout(() => removeToast(toast.id), 300);
             }}
             className="flex-shrink-0 ml-4 text-gray-400 hover:text-gray-600 transition-colors"
           >
