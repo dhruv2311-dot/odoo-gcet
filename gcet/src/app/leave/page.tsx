@@ -26,15 +26,11 @@ interface User {
 export default function LeavePage() {
   const router = useRouter();
   const [user, setUser] = useState<User | null>(null);
-  const [leaveRequests, setLeaveRequests] = useState<LeaveRequest[]>([]);
+  const [leaveRequests, setLeaveRequests] = useState<any[]>([]);
   const [loading, setLoading] = useState(true);
+  const [showCreateForm, setShowCreateForm] = useState(false);
   const [showNewForm, setShowNewForm] = useState(false);
   const [searchQuery, setSearchQuery] = useState('');
-
-  useEffect(() => {
-    fetchUser();
-    fetchLeaveRequests();
-  }, []);
 
   const fetchUser = async () => {
     try {
@@ -63,6 +59,11 @@ export default function LeavePage() {
       setLoading(false);
     }
   };
+
+  useEffect(() => {
+    fetchUser();
+    fetchLeaveRequests();
+  }, []);
 
   const handleApprove = async (leaveId: string) => {
     try {
