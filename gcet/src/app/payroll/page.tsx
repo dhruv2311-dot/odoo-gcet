@@ -4,6 +4,7 @@ import { useState, useEffect } from 'react';
 import { useRouter } from 'next/navigation';
 import Link from 'next/link';
 import { Search, Calendar, Users, FileText, Download } from 'lucide-react';
+import NotificationBell from '@/components/NotificationBell';
 
 interface PayrollRecord {
   id: string;
@@ -152,6 +153,9 @@ export default function PayrollPage() {
             </div>
 
             <div className="flex items-center space-x-4">
+              <div className="relative">
+                <NotificationBell userId={user?.id || ''} />
+              </div>
               <div className="relative">
                 <input
                   type="text"
